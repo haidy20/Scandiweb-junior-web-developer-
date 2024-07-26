@@ -97,6 +97,14 @@ button.cancel:hover {
     color: #666;
 }
 
+.success{
+    text-align: center;
+    color: #28a745;
+    width: 100%;
+    border: "1px solid red";
+    
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     form {

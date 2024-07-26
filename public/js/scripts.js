@@ -42,11 +42,18 @@ function handleTypeChange() {
 
 // Validate form inputs and display error messages
 function validateForm() {
+
     const sku = document.getElementById('sku').value;
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
     const type = document.getElementById('type').value;
     const errors = {};
+
+
+    document.getElementById('product_form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+    //  console.log('test');
 
     // SKU validation
     if (sku.trim() === '') {
@@ -72,6 +79,35 @@ function validateForm() {
         errors['type'] = 'Please, submit required data.';
     }
 
+    const formData = new FormData(this);
+    // formData.append("sku",sku)
+    // formData.append("name",name)
+    // formData.append("price",price)
+    // formData.append("type",type)
+
+    // console.log(formData);
+
+    fetch('http://127.0.0.1/scandiweb/project-root/api/addProduct.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('success').innerHTML=data.message
+            setTimeout(function(){
+                window.location.href = "http://127.0.0.1/scandiweb/project-root/public/index.php";
+            },1000)
+        } else {
+            errors['sku'] = data.message;
+            displayErrors(errors);
+
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
     // Clear previous error messages
     clearErrors();
 
@@ -80,6 +116,7 @@ function validateForm() {
 
     // Return false if there are errors
     return Object.keys(errors).length === 0;
+})
 }
 
 // Clear previous error messages
