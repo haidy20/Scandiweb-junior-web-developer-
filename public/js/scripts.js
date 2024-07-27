@@ -53,8 +53,6 @@ function validateForm() {
     document.getElementById('product_form').addEventListener('submit', function(e) {
         e.preventDefault();
 
-    //  console.log('test');
-
     // SKU validation
     if (sku.trim() === '') {
         errors['sku'] = 'Please, submit required data';
@@ -80,12 +78,6 @@ function validateForm() {
     }
 
     const formData = new FormData(this);
-    // formData.append("sku",sku)
-    // formData.append("name",name)
-    // formData.append("price",price)
-    // formData.append("type",type)
-
-    // console.log(formData);
 
     fetch('http://127.0.0.1/scandiweb/project-root/api/addProduct.php', {
         method: 'POST',

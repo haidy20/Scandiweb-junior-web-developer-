@@ -52,7 +52,7 @@ h1 {
     color: #dc3545;
     font-size: 1rem;
     margin-right: 1rem;
-    display: none; /* إخفاء الرسالة افتراضياً */
+    display: none;
 }
 
 
@@ -81,14 +81,14 @@ hr {
     padding: 1rem;
     margin: 1rem;
     position: relative;
-    width: calc(25% - 3rem); /* عرض الكارت ليكون 25% */
+    width: calc(25% - 3rem); 
     box-sizing: border-box;
-    height: 200px; /* الطول ليكون مربع */
+    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center; /* توسيط النص أفقيًا */
+    text-align: center;
 }
 
 .product p {
@@ -105,7 +105,7 @@ hr {
 @media (max-width: 768px) {
     .product {
         width: calc(50% - 2rem);
-        height: auto; /* تغيير الطول ليكون تلقائي في الشاشات الصغيرة */
+        height: auto; 
     }
 
     .actions button {
@@ -116,7 +116,7 @@ hr {
 @media (max-width: 480px) {
     .product {
         width: calc(100% - 2rem);
-        height: auto; /* تغيير الطول ليكون تلقائي في الشاشات الصغيرة */
+        height: auto; 
     }
 
     .header {
