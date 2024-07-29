@@ -10,7 +10,7 @@
         <h1>Product Add</h1>
         <div class="actions">
             <button type="submit" form="product_form" onclick="return validateForm()">Save</button>
-            <button class="cancel" onclick="window.location.href='../public/index.php'">Cancel</button>
+            <button class="cancel" onclick="window.location.href='../index.php'">Cancel</button>
         </div>
     </div>
     <hr>
@@ -19,7 +19,7 @@
     width: 100%;
     border: '1px solid red' "> </h4>
 
-    <form id="product_form" method="POST" action="../public/index.php?action=addProduct">
+    <form id="product_form" method="POST" action="../public/addProduct.php">
         <label for="sku">SKU:</label>
         <input type="text" id="sku" name="sku" >
         <div class="error-message" id="sku-error"></div><br>

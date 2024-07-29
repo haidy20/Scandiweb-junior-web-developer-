@@ -1,5 +1,32 @@
-// Handle form field changes based on selected product type
 document.addEventListener('DOMContentLoaded', handleTypeChange);
+
+const fieldSettings = {
+    'DVD': {
+        fields: `
+            <label for="size">Size (MB):</label>
+            <input type="number" id="size" name="size" step="0.01" required><br>
+        `,
+        description: '<p>Please, provide size.</p>'
+    },
+    'Book': {
+        fields: `
+            <label for="weight">Weight (KG):</label>
+            <input type="number" id="weight" name="weight" step="0.01" required><br>
+        `,
+        description: '<p>Please, provide weight.</p>'
+    },
+    'Furniture': {
+        fields: `
+            <label for="height">Height (CM):</label>
+            <input type="number" id="height" name="height" step="0.01" required><br>
+            <label for="width">Width (CM):</label>
+            <input type="number" id="width" name="width" step="0.01" required><br>
+            <label for="length">Length (CM):</label>
+            <input type="number" id="length" name="length" step="0.01" required><br>
+        `,
+        description: '<p>Please, provide dimensions.</p>'
+    }
+};
 
 function handleTypeChange() {
     const type = document.getElementById('type').value;
@@ -10,105 +37,84 @@ function handleTypeChange() {
     typeSpecificFields.innerHTML = '';
     dynamicDescription.innerHTML = '';
 
-    // Update fields and description based on selected type
-    switch (type) {
-        case 'DVD':
-            typeSpecificFields.innerHTML = `
-                <label for="size">Size (MB):</label>
-                <input type="number" id="size" name="size" step="0.01" required><br>
-            `;
-            dynamicDescription.innerHTML = '<p>Please, provide size.</p>';
-            break;
-        case 'Book':
-            typeSpecificFields.innerHTML = `
-                <label for="weight">Weight (KG):</label>
-                <input type="number" id="weight" name="weight" step="0.01" required><br>
-            `;
-            dynamicDescription.innerHTML = '<p>Please, provide weight.</p>';
-            break;
-        case 'Furniture':
-            typeSpecificFields.innerHTML = `
-                <label for="height">Height (CM):</label>
-                <input type="number" id="height" name="height" step="0.01" required><br>
-                <label for="width">Width (CM):</label>
-                <input type="number" id="width" name="width" step="0.01" required><br>
-                <label for="length">Length (CM):</label>
-                <input type="number" id="length" name="length" step="0.01" required><br>
-            `;
-            dynamicDescription.innerHTML = '<p>Please, provide dimensions.</p>';
-            break;
-    }
+    (fieldSettings[type] || {fields: '', description: ''}).fields;
+    (fieldSettings[type] || {fields: '', description: ''}).description;
+
+    typeSpecificFields.innerHTML = fieldSettings[type].fields;
+    dynamicDescription.innerHTML = fieldSettings[type].description;
 }
 
 // Validate form inputs and display error messages
 function validateForm() {
-
     const sku = document.getElementById('sku').value;
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
     const type = document.getElementById('type').value;
     const errors = {};
 
-
     document.getElementById('product_form').addEventListener('submit', function(e) {
         e.preventDefault();
 
-    // SKU validation
-    if (sku.trim() === '') {
-        errors['sku'] = 'Please, submit required data';
-    }
+        // Validation without if-else
+        const validations = {
+            sku: () => sku.trim() === '' ? 'Please, submit required data' : '',
+            name: () => {
+                if (name.trim() === '') {
+                    return 'Please, submit required data.';
+                } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                    return 'Please, provide the data of indicated type for Name.';
+                }
+                return '';
+            },
+            price: () => {
+                if (price.trim() === '') {
+                    return 'Please, submit required data.';
+                } else if (isNaN(price) || price <= 0) {
+                    return 'Please, provide the data of indicated type for Price.';
+                }
+                return '';
+            },
+            type: () => type === '' ? 'Please, submit required data.' : ''
+        };
 
-    // Name validation
-    if (name.trim() === '') {
-        errors['name'] = 'Please, submit required data.';
-    } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-        errors['name'] = 'Please, provide the data of indicated type for Name.';
-    }
+        Object.keys(validations).forEach(key => {
+            const error = validations[key]();
+            if (error) {
+                errors[key] = error;
+            }
+        });
 
-    // Price validation
-    if (price.trim() === '') {
-        errors['price'] = 'Please, submit required data.';
-    } else if (isNaN(price) || price <= 0) {
-        errors['price'] = 'Please, provide the data of indicated type for Price.';
-    }
+        const formData = new FormData(this);
 
-    // Type validation
-    if (type === '') {
-        errors['type'] = 'Please, submit required data.';
-    }
+        fetch('/scandiweb/project-root/api/addProduct.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('success').innerHTML = data.message;
+                setTimeout(function() {
+                    window.location.href = "/scandiweb/project-root/public/index.php";
+                }, 1000);
+            } else {
+                errors['sku'] = data.message;
+                displayErrors(errors);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 
-    const formData = new FormData(this);
+        // Clear previous error messages
+        clearErrors();
 
-    fetch('http://127.0.0.1/scandiweb/project-root/api/addProduct.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            document.getElementById('success').innerHTML=data.message
-            setTimeout(function(){
-                window.location.href = "http://127.0.0.1/scandiweb/project-root/public/index.php";
-            },1000)
-        } else {
-            errors['sku'] = data.message;
-            displayErrors(errors);
+        // Display new error messages
+        displayErrors(errors);
 
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
+        // Return false if there are errors
+        return Object.keys(errors).length === 0;
     });
-
-    // Clear previous error messages
-    clearErrors();
-
-    // Display new error messages
-    displayErrors(errors);
-
-    // Return false if there are errors
-    return Object.keys(errors).length === 0;
-})
 }
 
 // Clear previous error messages
@@ -121,18 +127,9 @@ function clearErrors() {
 
 // Display error messages
 function displayErrors(errors) {
-    if (errors['sku']) {
-        document.getElementById('sku-error').innerHTML = errors['sku'];
-    }
-    if (errors['name']) {
-        document.getElementById('name-error').innerHTML = errors['name'];
-    }
-    if (errors['price']) {
-        document.getElementById('price-error').innerHTML = errors['price'];
-    }
-    if (errors['type']) {
-        document.getElementById('type-error').innerHTML = errors['type'];
-    }
+    Object.keys(errors).forEach(key => {
+        document.getElementById(`${key}-error`).innerHTML = errors[key];
+    });
 }
 
 // Handle mass deletion of products

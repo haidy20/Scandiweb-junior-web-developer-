@@ -1,9 +1,9 @@
 <?php
 // controllers/ProductController.php
-require_once '../config/database.php';
-require_once '../classes/DVD.php';
-require_once '../classes/Book.php';
-require_once '../classes/Furniture.php';
+require_once 'config/database.php';
+require_once 'classes/DVD.php';
+require_once 'classes/Book.php';
+require_once 'classes/Furniture.php';
 
 class ProductController {
     private $conn;

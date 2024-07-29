@@ -2,20 +2,20 @@
 <html>
 <head>
     <title>Product List</title>
-    <link rel="stylesheet" type="text/css" href="../public/css/index.css">
-    <script src="../public/js/scripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="public/css/index.css">
+    <script src="public/js/scripts.js"></script>
 </head>
 <body>
     <div class="header">
         <h1>Product List</h1>
         <div class="actions">
             <div class="error-message"></div><br>
-            <button onclick="window.location.href='../views/add_product.php'">ADD</button>
+            <button onclick="window.location.href='views/add_product.php'">ADD</button>
             <button class="cancel" onclick="massDelete()">MASS DELETE</button>
         </div>
     </div>
     <hr>
-    <form id="product_list" method="POST" action="../public/index.php?action=massDelete">
+    <form id="product_list" method="POST" action="public/massDelete.php">
         <div class="products">
             <?php if (!empty($products)): ?>
                 <?php foreach ($products as $product): ?>
