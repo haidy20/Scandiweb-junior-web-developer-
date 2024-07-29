@@ -84,14 +84,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $productController->addProduct($sku, $name, $price, $type, $attributes);
-        header("Location: public/index.php");
+        header("Location: ../");
         exit;
     } catch (Exception $e) {
+        var_dump('catch');
+        die();
         $errorMessage = $e->getMessage();
         include 'views/addProduct.php'; // Re-display the form with error message
         exit;
     }
-
 
     // elseif (isset($_GET['action']) && $_GET['action'] === 'massDelete') {
     //     // Handle mass delete form submission

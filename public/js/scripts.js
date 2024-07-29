@@ -1,4 +1,50 @@
-document.addEventListener('DOMContentLoaded', handleTypeChange);
+window.addEventListener('load', function() {
+    handleTypeChange();
+
+    document.getElementById('product_form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        console.log('here  submit errors', Object.keys(window.errors).length);
+        if (Object.keys(window.errors).length) {
+            return;
+        }
+        
+        const formData = new FormData(this);
+
+        fetch('/api/addProduct.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('success').innerHTML = data.message;
+
+                // Clear previous error messages
+                clearErrors();
+        
+                // setTimeout(function() {
+                //     window.location.href = "/";
+                // }, 1000);
+            } else {
+                window.errors['sku'] = data.message;
+                displayErrors();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        // Clear previous error messages
+        clearErrors();
+
+        // Display new error messages
+        displayErrors();
+
+        // Return false if there are errors
+        return Object.keys(window.errors).length === 0;
+    });
+})
 
 const fieldSettings = {
     'DVD': {
@@ -28,6 +74,8 @@ const fieldSettings = {
     }
 };
 
+window.errors = {};
+
 function handleTypeChange() {
     const type = document.getElementById('type').value;
     const typeSpecificFields = document.getElementById('type_specific_fields');
@@ -37,11 +85,11 @@ function handleTypeChange() {
     typeSpecificFields.innerHTML = '';
     dynamicDescription.innerHTML = '';
 
-    (fieldSettings[type] || {fields: '', description: ''}).fields;
-    (fieldSettings[type] || {fields: '', description: ''}).description;
+    // (fieldSettings[type] || {fields: '', description: ''}).fields;
+    // (fieldSettings[type] || {fields: '', description: ''}).description;
 
-    typeSpecificFields.innerHTML = fieldSettings[type].fields;
-    dynamicDescription.innerHTML = fieldSettings[type].description;
+    typeSpecificFields.innerHTML = fieldSettings[type]?.fields || '';
+    dynamicDescription.innerHTML = fieldSettings[type]?.description || '';
 }
 
 // Validate form inputs and display error messages
@@ -50,85 +98,61 @@ function validateForm() {
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
     const type = document.getElementById('type').value;
-    const errors = {};
 
-    document.getElementById('product_form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Validation without if-else
-        const validations = {
-            sku: () => sku.trim() === '' ? 'Please, submit required data' : '',
-            name: () => {
-                if (name.trim() === '') {
-                    return 'Please, submit required data.';
-                } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-                    return 'Please, provide the data of indicated type for Name.';
-                }
-                return '';
-            },
-            price: () => {
-                if (price.trim() === '') {
-                    return 'Please, submit required data.';
-                } else if (isNaN(price) || price <= 0) {
-                    return 'Please, provide the data of indicated type for Price.';
-                }
-                return '';
-            },
-            type: () => type === '' ? 'Please, submit required data.' : ''
-        };
-
-        Object.keys(validations).forEach(key => {
-            const error = validations[key]();
-            if (error) {
-                errors[key] = error;
+    // Validation without if-else
+    var validations = {
+        sku: () => sku.trim() === '' ? 'Please, submit required data' : '',
+        name: () => {
+            if (name.trim() === '') {
+                return 'Please, submit required data.';
+            } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                return 'Please, provide the data of indicated type for Name.';
             }
-        });
-
-        const formData = new FormData(this);
-
-        fetch('/scandiweb/project-root/api/addProduct.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                document.getElementById('success').innerHTML = data.message;
-                setTimeout(function() {
-                    window.location.href = "/scandiweb/project-root/public/index.php";
-                }, 1000);
-            } else {
-                errors['sku'] = data.message;
-                displayErrors(errors);
+            return '';
+        },
+        price: () => {
+            if (price.trim() === '') {
+                return 'Please, submit required data.';
+            } else if (isNaN(price) || price <= 0) {
+                return 'Please, provide the data of indicated type for Price.';
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            return '';
+        },
+        type: () => type === '' ? 'Please, submit required data.' : ''
+    };
 
+    Object.keys(validations).forEach(key => {
+        const error = validations[key]();
+        if (error) {
+            window.errors[key] = error;
+        }
+    });
+
+    if (Object.keys(errors).length) {
+        // Display new error messages
+        displayErrors();
+
+        validations = {};
+    
         // Clear previous error messages
         clearErrors();
-
-        // Display new error messages
-        displayErrors(errors);
-
-        // Return false if there are errors
-        return Object.keys(errors).length === 0;
-    });
+        console.log('here validateForm after clear', window.errors);
+    }
 }
 
 // Clear previous error messages
 function clearErrors() {
-    document.getElementById('sku-error').innerHTML = '';
-    document.getElementById('name-error').innerHTML = '';
-    document.getElementById('price-error').innerHTML = '';
-    document.getElementById('type-error').innerHTML = '';
+    // document.getElementById('sku-error').innerHTML = '';
+    // document.getElementById('name-error').innerHTML = '';
+    // document.getElementById('price-error').innerHTML = '';
+    // document.getElementById('type-error').innerHTML = '';
+    window.errors = {};
 }
 
 // Display error messages
-function displayErrors(errors) {
-    Object.keys(errors).forEach(key => {
-        document.getElementById(`${key}-error`).innerHTML = errors[key];
+function displayErrors() {
+    Object.keys(window.errors).forEach(key => {
+        document.getElementById(`${key}-error`).innerHTML = window.errors[key];
     });
 }
 
@@ -152,3 +176,4 @@ function massDelete() {
         errorMessage.style.display = 'block';
     }
 }
+
