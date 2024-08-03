@@ -14,26 +14,23 @@
         </div>
     </div>
     <hr>
-    <h4 id="success" class="success" style=" text-align: center;
-    color: #28a745;
-    width: 100%;
-    border: '1px solid red' "> </h4>
+    <h4 id="success" class="success" style="text-align: center; color: #28a745; width: 100%;"> </h4>
 
     <form id="product_form" method="POST" action="../public/addProduct.php">
         <label for="sku">SKU:</label>
-        <input type="text" id="sku" name="sku" >
+        <input type="text" id="sku" name="sku">
         <div class="error-message" id="sku-error"></div><br>
 
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" >
+        <input type="text" id="name" name="name">
         <div class="error-message" id="name-error"></div><br>
 
         <label for="price">Price ($):</label>
-        <input type="number" id="price" name="price" step="0.01" >
+        <input type="number" id="price" name="price" step="0.01">
         <div class="error-message" id="price-error"></div><br>
 
         <label for="type">Type Switcher:</label>
-        <select id="type" name="type"  onchange="handleTypeChange()">
+        <select id="type" name="type" onchange="handleTypeChange()">
             <option value="">Select Type</option>
             <option value="Book">Book</option>
             <option value="DVD">DVD</option>

@@ -3,7 +3,7 @@ class Database {
     private $host = "localhost";
     private $db_name = "scandiweb";
     private $username = "root";
-    private $password = "Pass_tohell0";
+    private $password = "root";
     public $conn;
 
     public function getConnection() {

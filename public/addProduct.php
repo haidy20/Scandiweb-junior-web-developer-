@@ -10,6 +10,9 @@ $conn = $database->getConnection();
 $productController = new ProductController($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';
     // Handle the add product form submission
     $sku = $_POST['sku'];
     $name = trim($_POST['name']);
@@ -89,26 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         var_dump('catch');
         die();
-        $errorMessage = $e->getMessage();
+        echo 'Exception: ' . $e->getMessage(); // Display the error message
         include 'views/addProduct.php'; // Re-display the form with error message
         exit;
     }
-
-    // elseif (isset($_GET['action']) && $_GET['action'] === 'massDelete') {
-    //     // Handle mass delete form submission
-    //     $massDeleteController = new MassDeleteController($conn);
-    //     $ids = $_POST['ids'];
-
-    //     try {
-    //         $massDeleteController->deleteProducts($ids);
-    //         header("Location: ../index.php"); 
-    //         exit;
-    //     } catch (Exception $e) {
-    //         $errorMessage = $e->getMessage();
-    //         include 'views/index.php'; // Re-display the product list with error message
-    //         exit;
-    //     }
-    // }
 }
 
 ?>

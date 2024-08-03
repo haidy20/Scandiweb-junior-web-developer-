@@ -3,15 +3,12 @@ window.addEventListener('load', function() {
 
     document.getElementById('product_form').addEventListener('submit', function(e) {
         e.preventDefault();
-
-        console.log('here  submit errors', Object.keys(window.errors).length);
-        if (Object.keys(window.errors).length) {
-            return;
-        }
         
+        clearErrors(); // Clear previous error messages
+
         const formData = new FormData(this);
 
-        fetch('/api/addProduct.php', {
+        fetch('http://127.0.0.1/scandiweb/project-root/api/addProduct.php', {
             method: 'POST',
             body: formData
         })
@@ -23,23 +20,19 @@ window.addEventListener('load', function() {
                 // Clear previous error messages
                 clearErrors();
         
-                // setTimeout(function() {
-                //     window.location.href = "/";
-                // }, 1000);
+                setTimeout(function() {
+                    window.location.href = "http://127.0.0.1/scandiweb/project-root/index.php";
+                }, 1000);
             } else {
                 window.errors['sku'] = data.message;
-                displayErrors();
+                displayErrors(window.errors);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.log('Error:', error);
         });
 
-        // Clear previous error messages
-        clearErrors();
-
-        // Display new error messages
-        displayErrors();
+        validateForm(); // Validate form inputs
 
         // Return false if there are errors
         return Object.keys(window.errors).length === 0;
@@ -77,16 +70,13 @@ const fieldSettings = {
 window.errors = {};
 
 function handleTypeChange() {
-    const type = document.getElementById('type').value;
+    const type = document.getElementById('type')?.value;
     const typeSpecificFields = document.getElementById('type_specific_fields');
     const dynamicDescription = document.getElementById('dynamic-description');
     
     // Clear previous fields and descriptions
     typeSpecificFields.innerHTML = '';
     dynamicDescription.innerHTML = '';
-
-    // (fieldSettings[type] || {fields: '', description: ''}).fields;
-    // (fieldSettings[type] || {fields: '', description: ''}).description;
 
     typeSpecificFields.innerHTML = fieldSettings[type]?.fields || '';
     dynamicDescription.innerHTML = fieldSettings[type]?.description || '';
@@ -99,7 +89,9 @@ function validateForm() {
     const price = document.getElementById('price').value;
     const type = document.getElementById('type').value;
 
-    // Validation without if-else
+    window.errors = {}; // Clear previous errors
+
+    // Validation logic
     var validations = {
         sku: () => sku.trim() === '' ? 'Please, submit required data' : '',
         name: () => {
@@ -113,7 +105,7 @@ function validateForm() {
         price: () => {
             if (price.trim() === '') {
                 return 'Please, submit required data.';
-            } else if (isNaN(price) || price <= 0) {
+            } else if (isNaN(price) || price < 0) {
                 return 'Please, provide the data of indicated type for Price.';
             }
             return '';
@@ -128,31 +120,24 @@ function validateForm() {
         }
     });
 
-    if (Object.keys(errors).length) {
-        // Display new error messages
-        displayErrors();
-
-        validations = {};
-    
-        // Clear previous error messages
-        clearErrors();
-        console.log('here validateForm after clear', window.errors);
+    if (Object.keys(window.errors).length) {
+        displayErrors(window.errors); // Display new error messages
     }
 }
 
 // Clear previous error messages
 function clearErrors() {
-    // document.getElementById('sku-error').innerHTML = '';
-    // document.getElementById('name-error').innerHTML = '';
-    // document.getElementById('price-error').innerHTML = '';
-    // document.getElementById('type-error').innerHTML = '';
+    document.getElementById('sku-error').innerHTML = '';
+    document.getElementById('name-error').innerHTML = '';
+    document.getElementById('price-error').innerHTML = '';
+    document.getElementById('type-error').innerHTML = '';
     window.errors = {};
 }
 
 // Display error messages
-function displayErrors() {
-    Object.keys(window.errors).forEach(key => {
-        document.getElementById(`${key}-error`).innerHTML = window.errors[key];
+function displayErrors(errors) {
+    Object.keys(errors).forEach(key => {
+        document.getElementById(`${key}-error`).innerHTML = errors[key];
     });
 }
 
@@ -176,4 +161,3 @@ function massDelete() {
         errorMessage.style.display = 'block';
     }
 }
-

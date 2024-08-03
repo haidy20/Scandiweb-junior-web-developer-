@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } catch (Exception $e) {
         $errorMessage = $e->getMessage();
-        include '../views/index.php'; // Re-display the product list with error message
+        include '../views/index.php'; 
         exit;
     }
 }

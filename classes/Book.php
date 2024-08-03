@@ -1,6 +1,7 @@
 <?php
 // classes/Book.php
-require_once 'Product.php';
+// require_once 'Product.php';
+use Product;
 
 class Book extends Product {
     private $weight;
